@@ -1,83 +1,130 @@
 <template>
-    <div class="app-container">
-      <div class="header">
-        <img src="@/img/WechatIMG263-removebg-preview.png" alt="Logo" class="logo" />
-        <div class="center-text">请构建您的知识库！</div>
-        <RouterLink to="/login", class="navigate-button">Home</RouterLink>
+  <div class="app-container">
+    <div class="header">
+      <img src="@/img/WechatIMG263-removebg-preview.png" alt="Logo" class="logo" />
+      <div class="center-text">请构建您的知识库！</div>
+      <RouterLink to="/gradio-page" class="navigate-button">返回聊天</RouterLink>
+    </div>
+    <div class="content">
+      <div class="upload-section">
+        <h2>选择并上传文件</h2>
+        <!-- 选择文件 -->
+        <input type="file" @change="handleFileSelection" class="file-input" />
+        <!-- 点击上传按钮 -->
+        <button @click="uploadFile" class="upload-button" :disabled="!selectedFile">上传</button>
       </div>
-      <div class="content">
-        <Upload></Upload>
-        <div class="files-section">
-          <div v-for="file in uploadedFiles" :key="file.id" class="file-item">
-            <span>{{ file.name }}</span>
-            <button @click="viewFile(file.id)" class="view-button">View</button>
-            <button @click="deleteFile(file.id)" class="delete-button">Delete</button>
-          </div>
+      <div class="files-section">
+        <h2>已上传文件</h2>
+        <div v-if="uploadedFiles.length === 0">暂无已上传文件</div>
+        <div v-for="file in uploadedFiles" :key="file.name" class="file-item">
+          <span>{{ file.name }}</span>
+          <button @click="viewFile(file.name)" class="view-button">查看</button>
+          <button @click="deleteFile(file.name)" class="delete-button">删除</button>
         </div>
       </div>
     </div>
-  </template>
-  
-  <script>
-  import { ref } from 'vue';
-  import axios from 'axios';
-  import Upload from './Upload.vue';
-  import { RouterLink, RouterView } from 'vue-router';
-  export default {
-    name: 'AppLayout',
-    components: {
-      Upload,
-    },
-    setup() {
-      const uploadedFiles = ref([]);
-  
-      const handleFileUpload = (event) => {
-        const file = event.target.files[0];
-        const formData = new FormData();
-        formData.append('file', file);
-  
-        axios.post('http://your-server.com/upload', formData, {
-          headers: {
-            'Content-Type': 'multipart/form-data'
-          }
-        })
+  </div>
+</template>
+
+<script>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+export default {
+  name: 'AppLayout',
+  setup() {
+    const uploadedFiles = ref([]);
+    const selectedFile = ref(null);  // 用于存储选中的文件
+
+    // 选择文件
+    const handleFileSelection = (event) => {
+      selectedFile.value = event.target.files[0];
+    };
+
+    // 上传文件
+    const uploadFile = () => {
+      if (!selectedFile.value) {
+        alert('请先选择文件');
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append('file', selectedFile.value);
+      formData.append('action', 'upload');
+
+      axios.post('http://127.0.0.1:8000/chatbot/upload/', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      .then(response => {
+        uploadedFiles.value.push({
+          name: selectedFile.value.name,
+        });
+        alert('文件上传成功！');
+        selectedFile.value = null;  // 上传成功后清空选择的文件
+      })
+      .catch(error => {
+        console.error('Upload error:', error);
+        alert('文件上传失败');
+      });
+    };
+
+    // 获取文件列表
+    const getUploadedFiles = () => {
+      axios.get('http://127.0.0.1:8000/chatbot/files/')
         .then(response => {
-          uploadedFiles.value.push({
-            id: response.data.id,
-            name: file.name
-          });
+          uploadedFiles.value = response.data.uploaded_files;  // 确保 response.data.uploaded_files 是数组
         })
         .catch(error => {
-          console.error('Upload error:', error);
+          console.error('Error fetching files:', error);
         });
-      };
+    };
+
+    // 删除文件
+    const deleteFile = (filename) => {
+      axios.delete(`http://127.0.0.1:8000/chatbot/files/${filename}/`)
+        .then(response => {
+          uploadedFiles.value = uploadedFiles.value.filter(file => file.name !== filename);
+          alert('文件删除成功');
+        })
+        .catch(error => {
+          console.error('Delete error:', error);
+          alert('文件删除失败');
+        });
+    };
+
+    // 查看文件
+   const viewFile = (filename) => {
+     axios.get(`http://127.0.0.1:8000/chatbot/view_file/${filename}/`)
+    .then(response => {
+      const fileContent = response.data.file_content;
+      alert(`文件内容: \n${fileContent}`);  // 这里简单用 alert 展示文件内容，你也可以使用更好的方式展示
+    })
+    .catch(error => {
+      console.error('查看文件出错:', error);
+      alert('查看文件失败');
+    });
+   };
+
+    onMounted(() => {
+      getUploadedFiles();  // 页面加载时获取文件列表
+    });
+
+    return {
+      uploadedFiles,
+      selectedFile,
+      handleFileSelection,
+      uploadFile,
+      deleteFile,
+      viewFile,
+    };
+  },
+};
+</script>
+
   
-      const deleteFile = (id) => {
-        axios.delete(`http://your-server.com/files/${id}`)
-          .then(() => {
-            uploadedFiles.value = uploadedFiles.value.filter(file => file.id !== id);
-          })
-          .catch(error => {
-            console.error('Delete error:', error);
-          });
-      };
-  
-      const viewFile = (id) => {
-        window.open(`http://your-server.com/files/${id}`, '_blank');
-      };
-  
-  
-      return {
-        uploadedFiles,
-        handleFileUpload,
-        deleteFile,
-        viewFile,
-      };
-    }
-  };
-  </script>
-  
-  <style scoped>
+ <style scoped>
   .app-container {
     display: flex;
     flex-direction: column;

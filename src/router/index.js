@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 import LoginPage from '@/pages/Login.vue';
 import SignUpComponent from '@/pages/SignUpComponent.vue';
 import KnowledgeBase from '@/pages/KnowledgeBase.vue';
+import GradioPage from '@/pages/GradioPage.vue';
+
 const routes = [
   { 
     // 默认重定向到登录页面
@@ -22,7 +24,11 @@ const routes = [
     path: '/KnowledegBase', 
     name: 'KnowledgeBase', 
     component: KnowledgeBase,
-  }
+  },
+  { path: '/gradio-page', 
+    name: GradioPage,
+    component: GradioPage
+  },
 ];
   
 
