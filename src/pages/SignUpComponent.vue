@@ -51,8 +51,10 @@ function validateConfirmPassword(rule, value) {
 
 const formRef = ref(null);
 
+
 async function handleSubmit() {
-  formRef.value.validate(async (valid) => {
+  try {
+    const valid = await formRef.value.validate();  // 使用 await 等待 validate 的 Promise 结果
     if (valid) {
       try {
         const response = await axios.post('http://127.0.0.1:8000/chatbot/register/', {
@@ -71,8 +73,11 @@ async function handleSubmit() {
     } else {
       console.log('表单验证失败');
     }
-  });
+  } catch (error) {
+    console.error('验证过程中出现错误', error);
+  }
 }
+
 </script>
 
 <style scoped>
