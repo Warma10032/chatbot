@@ -95,17 +95,10 @@ export default {
     };
 
     // 查看文件
-   const viewFile = (filename) => {
-     axios.get(`http://127.0.0.1:8000/chatbot/view_file/${filename}/`)
-    .then(response => {
-      const fileContent = response.data.file_content;
-      alert(`文件内容: \n${fileContent}`);  // 这里简单用 alert 展示文件内容，你也可以使用更好的方式展示
-    })
-    .catch(error => {
-      console.error('查看文件出错:', error);
-      alert('查看文件失败');
-    });
-   };
+    const viewFile = (filename) => {
+      const fileUrl = `http://127.0.0.1:8000/chatbot/view_file/${filename}/`;
+      window.open(fileUrl, '_blank');  // 在新标签页中打开文件
+    };
 
     onMounted(() => {
       getUploadedFiles();  // 页面加载时获取文件列表
