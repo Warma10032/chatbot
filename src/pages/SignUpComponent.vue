@@ -14,7 +14,8 @@
         <n-form-item label="确认密码" path="confirmPassword">
           <n-input v-model:value="form.confirmPassword" type="password" placeholder="请确认密码" />
         </n-form-item>
-        <router-link to="/Login" class = 'n-button'>注册</router-link>
+        <!-- 使用 n-button 绑定 handleSubmit 方法 -->
+        <n-button type="primary" @click="handleSubmit">注册</n-button>
       </n-form>
     </n-card>
   </div>
@@ -22,7 +23,8 @@
 
 <script setup>
 import { ref } from 'vue';
-import { RouterLink, RouterView } from 'vue-router';
+import axios from 'axios';
+
 const form = ref({
   username: '',
   email: '',
@@ -49,12 +51,30 @@ function validateConfirmPassword(rule, value) {
 
 const formRef = ref(null);
 
-function handleSubmit() {
-  formRef.value.validate((valid) => {
+async function handleSubmit() {
+  try{
+  const valid = await formRef.value.validate();
     if (valid) {
-      console.log('注册成功');
+      try {
+        const response = await axios.post('http://127.0.0.1:8000/chatbot/register/', {
+          username: form.value.username,
+          email: form.value.email,
+          password: form.value.password,
+        });
+        console.log('注册成功：', response.data);
+        alert('注册成功');
+        // 注册成功后跳转到登录页面
+        window.location.href = '/Login';
+      } catch (error) {
+        console.error('注册失败：', error.response.data);
+        alert('注册失败，请检查输入信息');
+      }
+    } else {
+      console.log('表单验证失败');
     }
-  });
+  } catch (error) {
+    console.error('表单验证失败：', error);
+  }
 }
 </script>
 

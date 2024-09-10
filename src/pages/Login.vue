@@ -64,6 +64,11 @@
 <script>
 import { NCarousel } from 'naive-ui';
 import { RouterLink, RouterView } from 'vue-router';
+import axios from 'axios';
+import { useAuthStore } from '@/store/auth';
+
+
+
 export default {
   components: {
     NCarousel,
@@ -74,14 +79,28 @@ export default {
       password: '',
     };
   },
-  methods: {
-    handleLogin() {
-      console.log('登录信息：', this.username, this.password);
-      // 在这里处理登录逻辑
-    },
+ methods: {
+  async handleLogin() {
+    try {
+      const response = await axios.post('http://127.0.0.1:8000/chatbot/', {
+        username: this.username,
+        password: this.password,
+      });
+      const authStore = useAuthStore();
+      console.log('登录成功：', response.data);
+      alert('登录成功');
+      authStore.login();
+      // 登录成功后跳转到嵌入 Gradio 界面的 Vue 页面
+      this.$router.push('/gradio-page'); // 跳转到一个新的 Vue 路由
+    } catch (error) {
+      console.error('登录失败：', error.response.data);
+      alert('登录失败，用户名或密码错误');
+    }
   },
+},
 };
 </script>
+
 
 <style scoped>
 /* 页面背景设置 */

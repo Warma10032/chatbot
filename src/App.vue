@@ -9,7 +9,6 @@ import KnowledgeBase from './pages/KnowledgeBase.vue';
 
   <RouterView />
 
-
 </template>
 
 <style scoped>
