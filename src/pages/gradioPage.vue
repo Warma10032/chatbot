@@ -1,67 +1,112 @@
 <template>
-    <div class="gradio-page">
-      <!-- Gradio 界面 -->
-      <iframe
-        src="http://localhost:7860"
-        style="width: 120%; height: 900px; border: none;"
-      ></iframe>
-      
-      <!-- 跳转到知识库上传页面的按钮 -->
-      <div class="button-container">
-        <n-button type="primary" @click="goToUploadPage" class="upload-button">
-          上传资料
-        </n-button>
-        <n-button type="primary" @click="goToLoginPage" class="logout-button">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gradio Interface</title>
+  </head>
+  <div class="gradio-page">
+    <!-- Gradio 界面 -->
+    <iframe
+      src="http://localhost:7860"
+      class="full-iframe"
+      allow="microphone"
+    ></iframe>
+
+    <!-- 跳转到知识库上传页面的按钮 -->
+    <n-button type="primary" @click="goToUploadPage" class="upload-button">
+      上传资料
+    </n-button>
+    <n-button type="primary" @click="goToLoginPage" class="logout-button">
           登出
-        </n-button>
-      </div>
-    </div>
-  </template>
-  
-  <script setup>
-  import { useRouter } from 'vue-router';
-  import { useAuthStore } from '@/store/auth';
-  const router = useRouter();
-  
-  // 跳转到上传知识库页面
-  function goToUploadPage() {
-    router.push('/KnowledegBase');  // 确保你在路由中定义了 /upload-knowledge 页面
-  }
+    </n-button>
 
-  function goToLoginPage(){
-    const authStore = useAuthStore();
-    authStore.logout();
-    router.push('/Login');  // 确保你在路由中定义了 /upload-knowledge 页面
-  }
-  </script>
-  
-  <style scoped>
-  .gradio-page {
-    position: relative; /* 确保子元素可以相对于这个容器进行绝对定位 */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-  }
-  
-  .button-container {
-    position: absolute;
-    top: 40px;
-    right: 40px; /* 控制整个按钮组距离页面右侧的距离 */
-    display: flex;
-    align-items: center; /* 使按钮在垂直方向对齐 */
-    gap: 10px; /* 控制按钮之间的距离 */
-  }
+  </div>
+</template>
 
-  .upload-button, .logout-button {
-    padding: 5px 10px; /* 调整按钮的大小 */
-    font-size: 14px;   /* 调整按钮文字的大小 */
-    background-color: #4CAF50;
-    color: white;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  </style>
-  
+<script setup>
+import { useRouter } from 'vue-router';
+import { onMounted } from 'vue';
+
+const router = useRouter();
+
+// 跳转到上传知识库页面
+function goToUploadPage() {
+  router.push('/KnowledegBase');  // 确保你在路由中定义了 /upload-knowledge 页面
+}
+
+function goToLoginPage(){
+  // const authStore = useAuthStore();
+  // authStore.logout();
+  router.push('/Login');  // 确保你在路由中定义了 /upload-knowledge 页面
+}
+
+// 请求麦克风权限
+function requestMicrophonePermission() {
+  navigator.mediaDevices.getUserMedia({ audio: true })
+    .then((stream) => {
+      console.log('麦克风权限已授予');
+      // 在这里可以处理麦克风数据，或只是简单地释放流
+      stream.getTracks().forEach(track => track.stop());
+    })
+    .catch((error) => {
+      console.error('麦克风权限被拒绝', error);
+    });
+}
+
+onMounted(() => {
+  requestMicrophonePermission();
+  document.title = '赛博华佗';
+});
+</script>
+
+<style scoped>
+.gradio-page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden; /* 防止页面溢出产生滚动条 */
+}
+
+.full-iframe {
+  width: 100vw;
+  height: 100vh;
+  border: none; /* 移除iframe的边框 */
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+/* 使按钮位于页面右上角并且尺寸较小 */
+.upload-button, .logout-button {
+  position: absolute;
+  padding: 10px 20px;
+  font-size: 14px;
+  background-color: #4CAF50;
+  color: white;
+  border-radius: 5px;
+  cursor: pointer;
+  z-index: 10;
+  width: 100px; /* 设置统一的宽度 */
+  height: 40px; /* 设置统一的高度 */
+  text-align: center;
+}
+
+/* 使按钮位于页面右上角并且尺寸较小 */
+.upload-button {
+  top: 20px;   /* 距离顶部 20px */
+  right: 30px; /* 距离右侧 30px */
+}
+
+/* 登出按钮放在上传按钮下方 */
+.logout-button {
+  top: 70px;   /* 距离顶部 70px，与上传按钮保持间距 */
+  right: 30px; /* 距离右侧 30px */
+  background-color: #f44336; /* 改变登出按钮颜色 */
+}
+</style>
