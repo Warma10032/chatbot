@@ -21,21 +21,21 @@
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg"
+              src="../img/fitting.png"
               alt="Carousel 2"
             />
           </div>
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel3.jpeg"
+              src="../img/healing.png"
               alt="Carousel 3"
             />
           </div>
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg"
+              src="../img/running.png"
               alt="Carousel 4"
             />
           </div>
@@ -65,6 +65,9 @@
 import { NCarousel } from 'naive-ui';
 import { RouterLink, RouterView } from 'vue-router';
 import axios from 'axios';
+import { useAuthStore } from '@/store/auth';
+
+
 
 export default {
   components: {
@@ -83,8 +86,10 @@ export default {
         username: this.username,
         password: this.password,
       });
+      const authStore = useAuthStore();
       console.log('登录成功：', response.data);
       alert('登录成功');
+      authStore.login();
       // 登录成功后跳转到嵌入 Gradio 界面的 Vue 页面
       this.$router.push('/gradio-page'); // 跳转到一个新的 Vue 路由
     } catch (error) {
@@ -93,8 +98,6 @@ export default {
     }
   },
 },
-
-  
 };
 </script>
 
