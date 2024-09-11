@@ -45,7 +45,7 @@ function requestMicrophonePermission() {
 
 onMounted(() => {
   requestMicrophonePermission();
-  document.title = '聊天机器人';
+  document.title = '赛博华佗';
 });
 </script>
 

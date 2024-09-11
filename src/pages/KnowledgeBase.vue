@@ -102,6 +102,7 @@ export default {
 
     onMounted(() => {
       getUploadedFiles();  // 页面加载时获取文件列表
+      document.title = '赛博华佗';
     });
 
     return {
