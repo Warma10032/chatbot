@@ -21,21 +21,21 @@
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel2.jpeg"
+              src="../img/fitting.png"
               alt="Carousel 2"
             />
           </div>
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel3.jpeg"
+              src="../img/healing.png"
               alt="Carousel 3"
             />
           </div>
           <div class="carousel-item">
             <img
               class="carousel-img"
-              src="https://naive-ui.oss-cn-beijing.aliyuncs.com/carousel-img/carousel4.jpeg"
+              src="../img/running.png"
               alt="Carousel 4"
             />
           </div>
